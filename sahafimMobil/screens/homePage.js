@@ -1,37 +1,38 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
-const HomePage = () => {
-  const navigation = useNavigation();
-
+const HomaPage = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.baslik}>Sahafım</Text>
-      <View style={styles.butonlarContainer}>
-        <TouchableOpacity style={styles.buton} onPress={() => navigation.navigate('Kitaplik')}>
-          <Text style={styles.butonMetin}>Kitaplık</Text>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('KitaplikPage')}
+        >
+          <Text style={styles.buttonText}>Kitaplık</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buton}>
-          <Text style={styles.butonMetin}>Kitap Ekle</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.butonlarContainer}>
-        <TouchableOpacity style={styles.buton}>
-          <Text style={styles.butonMetin}>Günlük Kazanç</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buton}>
-          <Text style={styles.butonMetin}>Aylık Kazanç</Text>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Kitap Ekle</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.butonlarContainer}>
-        <TouchableOpacity style={styles.buton}>
-          <Text style={styles.butonMetin}>Profil</Text>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Günlük Kazanç</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Aylık Kazanç</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Profil</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
+export default HomaPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -39,31 +40,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  baslik: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    fontFamily: 'font1',
-    marginBottom: 20,
-  },
-  butonlarContainer: {
+  buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'center',
   },
-  buton: {
-    width: 150,
-    height: 150,
+  button: {
     backgroundColor: 'black',
     borderRadius: 20,
-    justifyContent: 'center',
+    padding: 10,
+    marginVertical: 10,
+    marginHorizontal: 5,
+    width: 100,
+    height: 100,
     alignItems: 'center',
-    marginRight: 10, // Butonların arasına sağ taraftan 10 birimlik boşluk eklendi
+    justifyContent: 'center',
   },
-  butonMetin: {
+  buttonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
-
-export default HomePage;
