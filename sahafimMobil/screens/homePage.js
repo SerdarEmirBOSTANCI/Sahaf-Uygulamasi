@@ -11,7 +11,10 @@ const HomaPage = ({ navigation }) => {
         >
           <Text style={styles.buttonText}>Kitaplık</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('KitapEkle')}
+        >
           <Text style={styles.buttonText}>Kitap Ekle</Text>
         </TouchableOpacity>
       </View>
