@@ -28,11 +28,11 @@ const LoginScreen = ({ navigation }) => {
           value={password}
           secureTextEntry
         />
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HomaPage')}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('homePage')}>
           <Text style={styles.buttonText}>Giriş Yap</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.registerLink} onPress={() => navigation.navigate('HomePage')}>
+      <TouchableOpacity style={styles.registerLink} onPress={() => navigation.navigate ('registerPage')}>
         <Text>Kayıt Ol</Text>
       </TouchableOpacity>
     </View>

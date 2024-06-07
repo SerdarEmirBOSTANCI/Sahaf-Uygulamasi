@@ -4,30 +4,27 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 const HomaPage = ({ navigation }) => {
   return (
     <View style={styles.container}>
+      
       <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('KitaplikPage')}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('KitaplikPage')}>
           <Text style={styles.buttonText}>Kitaplık</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('KitapEkle')}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('KitapEkle')}>
           <Text style={styles.buttonText}>Kitap Ekle</Text>
         </TouchableOpacity>
       </View>
+
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('gunlukKazancPage')}>
           <Text style={styles.buttonText}>Günlük Kazanç</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('kazancPage')}>
           <Text style={styles.buttonText}>Aylık Kazanç</Text>
         </TouchableOpacity>
       </View>
+      
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('profilPage')}>
           <Text style={styles.buttonText}>Profil</Text>
         </TouchableOpacity>
       </View>

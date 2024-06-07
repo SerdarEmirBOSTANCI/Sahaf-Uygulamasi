@@ -2,9 +2,13 @@ import React from 'react';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
 
 const dailyEarningsData = [
-  { date: '2024-05-30', soldBooks: 10, totalEarnings: 500 },
-  { date: '2024-05-31', soldBooks: 15, totalEarnings: 750 },
-  // Daha fazla veri ekleyebilirsiniz
+  { date: '2024-05-30', soldBooks: 10, buyBooks: 3, totalEarnings: 500 },
+  { date: '2024-05-31', soldBooks: 15, buyBooks: 2, totalEarnings: 750 },
+  { date: '2024-06-01', soldBooks: 20, buyBooks: 3, totalEarnings: 1250 },
+  { date: '2024-06-02', soldBooks: 1, buyBooks: 9, totalEarnings: -300 },
+  { date: '2024-06-03', soldBooks: 10, buyBooks: 0, totalEarnings: 750 },
+  { date: '2024-06-04', soldBooks: 12, buyBooks: 5, totalEarnings: 450 },
+
 ];
 
 const DailyEarnings = () => {
@@ -12,6 +16,7 @@ const DailyEarnings = () => {
     <View style={styles.row}>
       <Text style={styles.cell}>{item.date}</Text>
       <Text style={styles.cell}>{item.soldBooks}</Text>
+      <Text style={styles.cell}>{item.buyBooks}</Text>
       <Text style={styles.cell}>{item.totalEarnings} ₺</Text>
     </View>
   );
@@ -25,6 +30,7 @@ const DailyEarnings = () => {
         <View style={styles.row}>
           <Text style={[styles.cell, styles.headerCell]}>Tarih</Text>
           <Text style={[styles.cell, styles.headerCell]}>Satılan Kitap Sayısı</Text>
+          <Text style={[styles.cell, styles.headerCell]}>Alınan Kitap Sayısı</Text>
           <Text style={[styles.cell, styles.headerCell]}>Toplam Gelir (₺)</Text>
         </View>
         <FlatList
