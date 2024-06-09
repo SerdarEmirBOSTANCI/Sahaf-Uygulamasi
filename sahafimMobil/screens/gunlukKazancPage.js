@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Button, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GunlukKazancPage = ({ soldBooks }) => {
@@ -38,7 +38,6 @@ const GunlukKazancPage = ({ soldBooks }) => {
         updatedDailyEarnings.push({
           date: today,
           soldBooks: totalSoldBooks,
-          buyBooks: 0, // Bu alana satın alınan kitap sayısını ekleyebilirsiniz.
           totalEarnings: totalEarnings,
         });
       }
@@ -52,21 +51,47 @@ const GunlukKazancPage = ({ soldBooks }) => {
     <View style={styles.row}>
       <Text style={styles.cell}>{item.date}</Text>
       <Text style={styles.cell}>{item.soldBooks}</Text>
-      <Text style={styles.cell}>{item.buyBooks}</Text>
       <Text style={styles.cell}>{item.totalEarnings} ₺</Text>
     </View>
   );
+
+  const clearRecords = async () => {
+    Alert.alert(
+      'Tüm Kayıtlar Silinecek',
+      'İşleme devam edilsin mi?',
+      [
+        {
+          text: 'Vazgeç',
+          onPress: () => console.log('Silme işlemi iptal edildi.'),
+          style: 'cancel',
+        },
+        {
+          text: 'Evet',
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem('dailyEarnings');
+              setDailyEarnings([]);
+              console.log('Tüm kayıtlar başarıyla silindi.');
+            } catch (error) {
+              console.error('Error clearing records:', error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Günlük Kazanç Takibi</Text>
       </View>
+      <Button title="Kayıtları Sil" onPress={clearRecords} color="red" />
       <View style={styles.table}>
         <View style={styles.row}>
           <Text style={[styles.cell, styles.headerCell]}>Tarih</Text>
           <Text style={[styles.cell, styles.headerCell]}>Satılan Kitap Sayısı</Text>
-          <Text style={[styles.cell, styles.headerCell]}>Alınan Kitap Sayısı</Text>
           <Text style={[styles.cell, styles.headerCell]}>Toplam Gelir (₺)</Text>
         </View>
         <FlatList

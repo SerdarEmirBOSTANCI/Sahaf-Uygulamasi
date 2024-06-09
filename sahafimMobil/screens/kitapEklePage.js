@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KitapEkle = ({ onKitapEklendi }) => {
@@ -11,6 +11,12 @@ const KitapEkle = ({ onKitapEklendi }) => {
   const [rafBilgisi, setRafBilgisi] = useState('');
 
   const kitapEkle = async () => {
+    // Boş alan kontrolü
+    if (!kitapAdi || !yazarAdi || !kitapTuru || !alisFiyati || !satisFiyati || !rafBilgisi) {
+      Alert.alert('Hata', 'Lütfen tüm alanları doldurun.');
+      return;
+    }
+
     const yeniKitap = {
       id: Math.floor(Math.random() * 1000), // Rastgele bir ID oluşturabiliriz
       kitapAdi,
@@ -29,6 +35,8 @@ const KitapEkle = ({ onKitapEklendi }) => {
       await AsyncStorage.setItem('kitaplar', JSON.stringify(yeniKitaplarListesi));
       // Kitap eklendiğinde parent bileşene haber verelim
       onKitapEklendi(yeniKitaplarListesi);
+      // Bildiri gösterelim
+      Alert.alert('Bildiri', 'Ekleme işlemi gerçekleştirildi.');
       // Formu temizleyelim
       setKitapAdi('');
       setYazarAdi('');
