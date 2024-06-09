@@ -1,17 +1,53 @@
-import React from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const dailyEarningsData = [
-  { date: '2024-05-30', soldBooks: 10, buyBooks: 3, totalEarnings: 500 },
-  { date: '2024-05-31', soldBooks: 15, buyBooks: 2, totalEarnings: 750 },
-  { date: '2024-06-01', soldBooks: 20, buyBooks: 3, totalEarnings: 1250 },
-  { date: '2024-06-02', soldBooks: 1, buyBooks: 9, totalEarnings: -300 },
-  { date: '2024-06-03', soldBooks: 10, buyBooks: 0, totalEarnings: 750 },
-  { date: '2024-06-04', soldBooks: 12, buyBooks: 5, totalEarnings: 450 },
+const GunlukKazancPage = ({ soldBooks }) => {
+  const [dailyEarnings, setDailyEarnings] = useState([]);
 
-];
+  useEffect(() => {
+    const fetchDailyEarnings = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('dailyEarnings');
+        const storedDailyEarnings = jsonValue != null ? JSON.parse(jsonValue) : [];
+        setDailyEarnings(storedDailyEarnings);
+      } catch (error) {
+        console.error('Error loading daily earnings:', error);
+      }
+    };
 
-const DailyEarnings = () => {
+    fetchDailyEarnings();
+  }, []);
+
+  useEffect(() => {
+    if (soldBooks && soldBooks.length > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      const totalSoldBooks = soldBooks.reduce((acc, curr) => acc + curr.quantity, 0);
+      const totalEarnings = soldBooks.reduce((acc, curr) => acc + curr.totalPrice, 0);
+
+      const updatedDailyEarnings = [...dailyEarnings];
+      const todayIndex = updatedDailyEarnings.findIndex(item => item.date === today);
+
+      if (todayIndex !== -1) {
+        updatedDailyEarnings[todayIndex] = {
+          ...updatedDailyEarnings[todayIndex],
+          soldBooks: updatedDailyEarnings[todayIndex].soldBooks + totalSoldBooks,
+          totalEarnings: updatedDailyEarnings[todayIndex].totalEarnings + totalEarnings,
+        };
+      } else {
+        updatedDailyEarnings.push({
+          date: today,
+          soldBooks: totalSoldBooks,
+          buyBooks: 0, // Bu alana satın alınan kitap sayısını ekleyebilirsiniz.
+          totalEarnings: totalEarnings,
+        });
+      }
+
+      setDailyEarnings(updatedDailyEarnings);
+      AsyncStorage.setItem('dailyEarnings', JSON.stringify(updatedDailyEarnings));
+    }
+  }, [soldBooks]);
+
   const renderItem = ({ item }) => (
     <View style={styles.row}>
       <Text style={styles.cell}>{item.date}</Text>
@@ -34,7 +70,7 @@ const DailyEarnings = () => {
           <Text style={[styles.cell, styles.headerCell]}>Toplam Gelir (₺)</Text>
         </View>
         <FlatList
-          data={dailyEarningsData}
+          data={dailyEarnings}
           renderItem={renderItem}
           keyExtractor={(item) => item.date}
         />
@@ -74,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DailyEarnings;
+export default GunlukKazancPage;

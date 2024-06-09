@@ -1,16 +1,14 @@
-// App.js
-
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import homePage from './screens/homePage';
 import KitaplikPage from './screens/kitaplikPage';
 import KitapEklePage from './screens/kitapEklePage';
-import kazancPage from './screens/kazancPage';
 import gunlukKazancPage from './screens/gunlukKazancPage';
-import porfilPage from './screens/profilPage';
+import profilPage from './screens/profilPage';
 import loginPage from './screens/loginPage';
 import registerPage from './screens/registerPage';
+import kazancPage from './screens/kazancPage';
 
 const Stack = createStackNavigator();
 
@@ -33,21 +31,22 @@ function App() {
           component={homePage}
           options={{ title: 'Ana Sayfa' }}
         />
-        
         <Stack.Screen
           name="KitaplikPage"
           component={KitaplikPage}
-          options={{ title: 'Kitaplik' }}
+          options={{ title: 'Kitaplık' }}
         />
+        {(props) => <KitaplikSayfasi {...props} kitaplar={kitaplar} />}
         <Stack.Screen
-          name="KitapEkle"
+          name="KitapEklePage"
           component={KitapEklePage}
-          options={{ title: 'KitapEkle' }}
+          options={{ title: 'Kitap Ekle' }}
         />
+        {(props) => <KitapEklePage {...props} onKitaplarGuncellendi={handleKitaplarGuncellendi} />}
         <Stack.Screen
           name="kazancPage"
           component={kazancPage}
-          options={{ title: 'kazanç' }}
+          options={{ title: 'Kazanç' }}
         />
         <Stack.Screen
           name="gunlukKazancPage"
@@ -56,7 +55,7 @@ function App() {
         />
         <Stack.Screen
           name="profilPage"
-          component={porfilPage}
+          component={profilPage}
           options={{ title: 'Profil' }}
         />
       </Stack.Navigator>

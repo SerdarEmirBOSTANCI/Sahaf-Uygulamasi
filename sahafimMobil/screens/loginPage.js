@@ -29,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
           secureTextEntry
         />
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('homePage')}>
-          <Text style={styles.buttonText}>Giriş Yap</Text>
+          <Text style={styles.buttonText}>Giriş</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.registerLink} onPress={() => navigation.navigate ('registerPage')}>

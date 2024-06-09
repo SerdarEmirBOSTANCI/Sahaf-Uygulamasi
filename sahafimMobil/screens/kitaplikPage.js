@@ -1,28 +1,109 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const KitaplikSayfasi = () => {
-  const [kitaplar, setKitaplar] = useState([
-    { id: '1', baslik: 'Kitap 1', yazar: 'Yazar 1', tur: 'Kurgu', fiyat: '₺25', raf: '1. Raf' },
-    { id: '2', baslik: 'Kitap 2', yazar: 'Yazar 2', tur: 'Bilim Kurgu', fiyat: '₺30', raf: '2. Raf' },
-    { id: '3', baslik: 'Kitap 3', yazar: 'Yazar 3', tur: 'Bilgi', fiyat: '₺20', raf: '1. Raf' },
-    // Diğer kitaplar buraya eklenebilir
-  ]);
-
+const KitapEklePage = () => {
+  const [filtrelenmisKitaplar, setFiltrelenmisKitaplar] = useState([]);
   const [aramaKelimesi, setAramaKelimesi] = useState('');
-  const [filtrelenmisKitaplar, setFiltrelenmisKitaplar] = useState(kitaplar);
+  const [gunlukKar, setGunlukKar] = useState(0);
+  const [satilanKitapSayisi, setSatilanKitapSayisi] = useState(0);
+
+  useEffect(() => {
+    const loadKitaplar = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('kitaplar');
+        const loadedKitaplar = jsonValue != null ? JSON.parse(jsonValue) : [];
+        setFiltrelenmisKitaplar(loadedKitaplar);
+      } catch (error) {
+        console.error('Error loading kitaplar from AsyncStorage:', error);
+      }
+    };
+    loadKitaplar();
+  }, []);
+
+  useEffect(() => {
+    const fetchDailyEarnings = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('dailyEarnings');
+        const storedDailyEarnings = jsonValue != null ? JSON.parse(jsonValue) : [];
+        const today = new Date().toISOString().split('T')[0];
+        const todayIndex = storedDailyEarnings.findIndex(item => item.date === today);
+        if (todayIndex !== -1) {
+          setGunlukKar(storedDailyEarnings[todayIndex].totalEarnings);
+          setSatilanKitapSayisi(storedDailyEarnings[todayIndex].soldBooks);
+        }
+      } catch (error) {
+        console.error('Error loading daily earnings:', error);
+      }
+    };
+    fetchDailyEarnings();
+  }, []);
+
+  const calculateDailyEarnings = async (satisFiyati, alisFiyati) => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('dailyEarnings');
+      let dailyEarnings = jsonValue != null ? JSON.parse(jsonValue) : [];
+
+      const today = new Date().toISOString().split('T')[0];
+      const todayIndex = dailyEarnings.findIndex(item => item.date === today);
+
+      const kar = satisFiyati - alisFiyati;
+
+      if (todayIndex !== -1) {
+        dailyEarnings[todayIndex] = {
+          ...dailyEarnings[todayIndex],
+          totalEarnings: dailyEarnings[todayIndex].totalEarnings + kar,
+          soldBooks: dailyEarnings[todayIndex].soldBooks + 1,
+        };
+      } else {
+        dailyEarnings.push({
+          date: today,
+          soldBooks: 1,
+          buyBooks: 0,
+          totalEarnings: kar,
+        });
+      }
+
+      await AsyncStorage.setItem('dailyEarnings', JSON.stringify(dailyEarnings));
+      setGunlukKar(dailyEarnings[todayIndex]?.totalEarnings || kar);
+      setSatilanKitapSayisi(dailyEarnings[todayIndex]?.soldBooks || 1);
+    } catch (error) {
+      console.error('Error calculating daily earnings:', error);
+    }
+  };
 
   const aramayiUygula = () => {
-    const filtreli = kitaplar.filter(kitap =>
-      kitap.baslik.toLowerCase().includes(aramaKelimesi.toLowerCase()) ||
-      kitap.tur.toLowerCase().includes(aramaKelimesi.toLowerCase())
+    const filtreli = filtrelenmisKitaplar.filter(kitap =>
+      kitap.kitapAdi.toLowerCase().includes(aramaKelimesi.toLowerCase()) ||
+      kitap.kitapTuru.toLowerCase().includes(aramaKelimesi.toLowerCase())
     );
     setFiltrelenmisKitaplar(filtreli);
   };
 
-  const kitabiSat = (id) => {
-    // Kitabın satış işlemleri burada gerçekleştirilebilir
-    console.log('Kitap satıldı:', id);
+  const kitabiSil = async (id) => {
+    try {
+      const updatedKitaplar = filtrelenmisKitaplar.filter(kitap => kitap.id !== id);
+      setFiltrelenmisKitaplar(updatedKitaplar);
+      await AsyncStorage.setItem('kitaplar', JSON.stringify(updatedKitaplar));
+    } catch (error) {
+      console.error('Error deleting kitap:', error);
+    }
+  };
+
+  const kitabiSat = async (id, satisFiyati, alisFiyati) => {
+    try {
+      const updatedKitaplar = filtrelenmisKitaplar.filter(kitap => {
+        if (kitap.id === id) {
+          calculateDailyEarnings(satisFiyati, alisFiyati); // Günlük kazancı hesapla ve sakla
+          return false;
+        }
+        return true;
+      });
+      setFiltrelenmisKitaplar(updatedKitaplar);
+      await AsyncStorage.setItem('kitaplar', JSON.stringify(updatedKitaplar));
+    } catch (error) {
+      console.error('Error selling kitap:', error);
+    }
   };
 
   return (
@@ -40,20 +121,27 @@ const KitaplikSayfasi = () => {
         renderItem={({ item }) => (
           <View style={styles.kitapContainer}>
             <View style={styles.kitapBilgi}>
-              <Text style={styles.kitapYazi}>Başlık: {item.baslik}</Text>
-              <Text style={styles.kitapYazi}>Yazar: {item.yazar}</Text>
-              <Text style={styles.kitapYazi}>Fiyat: {item.fiyat}</Text>
-              <Text style={styles.kitapYazi}>Tür: {item.tur}</Text>
-              <Text style={styles.kitapYazi}>Raf: {item.raf}</Text>
+              <Text style={styles.kitapYazi}>Kitap Adı: {item.kitapAdi}</Text>
+              <Text style={styles.kitapYazi}>Yazar Adı: {item.yazarAdi}</Text>
+              <Text style={styles.kitapYazi}>Kitap Türü: {item.kitapTuru}</Text>
+              <Text style={styles.kitapYazi}>Alış Fiyatı: {item.alisFiyati}</Text>
+              <Text style={styles.kitapYazi}>Satış Fiyatı: {item.satisFiyati}</Text>
+              <TouchableOpacity style={styles.satButton} onPress={() => kitabiSat(item.id, item.satisFiyati, item.alisFiyati)}>
+                <Text style={styles.buttonText}>Sat</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.silButton} onPress={() => kitabiSil(item.id)}>
+                <Text style={styles.buttonText}>Sil</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => kitabiSat(item.id)} style={styles.satButton}>
-              <Text style={styles.satButtonText}>Sat</Text>
-            </TouchableOpacity>
           </View>
         )}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContainer}
+        keyExtractor={item => item.id.toString()}
       />
+
+      <View style={styles.karContainer}>
+        <Text style={styles.karYazi}>Günlük Kar: {gunlukKar} TL</Text>
+        <Text style={styles.karYazi}>Satılan Kitap Sayısı: {satilanKitapSayisi}</Text>
+      </View>
     </View>
   );
 };
@@ -61,70 +149,54 @@ const KitaplikSayfasi = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 16,
+    backgroundColor: '#fff',
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-  button: {
-    backgroundColor: 'blue',
-    borderRadius: 5,
-    padding: 10,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  filtreContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-  },
-  filtreButton: {
-    backgroundColor: 'green',
-    borderRadius: 5,
-    padding: 10,
-    alignItems: 'center',
-  },
-  filtreText: {
-    color: 'white',
-    fontWeight: 'bold',
+    paddingHorizontal: 8,
   },
   kitapContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: 'gray',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingBottom: 10,
   },
   kitapBilgi: {
     flex: 1,
   },
   kitapYazi: {
     fontSize: 16,
-  },
-  listContainer: {
-    flexGrow: 1,
+    marginBottom: 5,
   },
   satButton: {
     backgroundColor: 'green',
     padding: 10,
-    borderRadius: 5,
+    marginRight: 5,
   },
-  satButtonText: {
-    color: 'white',
+  silButton: {
+    backgroundColor: 'red',
+    padding: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+  },
+  karContainer: {
+    marginTop: 20,
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+  },
+  karYazi: {
+    fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
-export default KitaplikSayfasi;
+export default KitapEklePage;
