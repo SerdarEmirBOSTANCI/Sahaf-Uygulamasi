@@ -5,7 +5,6 @@ import homePage from './screens/homePage';
 import KitaplikPage from './screens/kitaplikPage';
 import KitapEklePage from './screens/kitapEklePage';
 import gunlukKazancPage from './screens/gunlukKazancPage';
-import profilPage from './screens/profilPage';
 import loginPage from './screens/loginPage';
 import registerPage from './screens/registerPage';
 import kazancPage from './screens/kazancPage';
@@ -46,17 +45,12 @@ function App() {
         <Stack.Screen
           name="kazancPage"
           component={kazancPage}
-          options={{ title: 'Kazanç' }}
+          options={{ title: 'Aylık Gelir' }}
         />
         <Stack.Screen
           name="gunlukKazancPage"
           component={gunlukKazancPage}
           options={{ title: 'Günlük Kazanç' }}
-        />
-        <Stack.Screen
-          name="profilPage"
-          component={profilPage}
-          options={{ title: 'Profil' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

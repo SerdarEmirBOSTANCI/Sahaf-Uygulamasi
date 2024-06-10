@@ -1,14 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // Giriş işlemleri burada yapılacak
-    // Örneğin, kullanıcı adı ve şifre kontrolü gibi
-    // navigation.navigate('HomePage'); // Giriş yapıldığında HomePage'e gitmek için
+  const handleLogin = async () => {
+    try {
+      const users = await AsyncStorage.getItem('users');
+      if (users) {
+        const userList = JSON.parse(users);
+        const user = userList.find(user => user.username === username && user.password === password);
+        if (user) {
+          navigation.navigate('homePage');
+          setUsername('');
+          setPassword('');
+        } else {
+          Alert.alert('Hata', 'Geçersiz kullanıcı adı veya şifre.');
+        }
+      } else {
+        Alert.alert('Hata', 'Kayıtlı kullanıcı bulunamadı.');
+      }
+    } catch (error) {
+      console.error('Error checking login info:', error);
+      Alert.alert('Hata', 'Giriş bilgileri kontrol edilirken bir hata oluştu. Lütfen tekrar deneyin.');
+    }
   };
 
   return (
@@ -28,11 +45,11 @@ const LoginScreen = ({ navigation }) => {
           value={password}
           secureTextEntry
         />
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('homePage')}>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Giriş</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.registerLink} onPress={() => navigation.navigate ('registerPage')}>
+      <TouchableOpacity style={styles.registerLink} onPress={() => navigation.navigate('registerPage')}>
         <Text>Kayıt Ol</Text>
       </TouchableOpacity>
     </View>
@@ -44,6 +61,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor:'#eee'
   },
   title: {
     fontSize: 48,

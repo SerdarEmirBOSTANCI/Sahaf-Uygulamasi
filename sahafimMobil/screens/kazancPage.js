@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
@@ -109,8 +109,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Aylık Gelir ve Gider Hesaplama</Text>
-
+      <Text style={styles.header}>Gelir ve Gider Hesaplayıcı</Text>
       <TextInput
         style={styles.input}
         placeholder="Kira Gideri"
@@ -126,18 +125,22 @@ export default function App() {
         onChangeText={setBills}
       />
 
-      <Button title="Hesapla" onPress={calculate} />
-      <Button title="Kayıtları Sil" onPress={clearRecords} color="red" />
+      <TouchableOpacity style={styles.button} onPress={calculate}>
+        <Text style={styles.buttonText}>Hesapla</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.button, styles.clearButton]} onPress={clearRecords}>
+        <Text style={styles.clearButtonText}>Kayıtları Sil</Text>
+      </TouchableOpacity>
 
       <FlatList
         data={records}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.record}>
-            <Text>{item.monthYear}</Text>
-            <Text>Gelir: {item.income} ₺</Text>
-            <Text>Gider: {item.expenses} ₺</Text>
-            <Text>Net Gelir: {item.netIncome} ₺</Text>
+            <Text style={styles.recordText}>{item.monthYear}</Text>
+            <Text style={styles.recordText}>Gelir: {item.income} ₺</Text>
+            <Text style={styles.recordText}>Gider: {item.expenses} ₺</Text>
+            <Text style={styles.recordText}>Net Gelir: {item.netIncome} ₺</Text>
           </View>
         )}
       />
@@ -149,23 +152,54 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#eee',
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
+    color: '#343a40',
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: '#ced4da',
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 8,
+    borderRadius: 5,
+    backgroundColor: '#ffffff',
+  },
+  button: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  clearButton: {
+    backgroundColor: 'red',
+  },
+  clearButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   record: {
-    padding: 10,
+    padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: '#ced4da',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  recordText: {
+    fontSize: 16,
+    color: '#495057',
   },
 });

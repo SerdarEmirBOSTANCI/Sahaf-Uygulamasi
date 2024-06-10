@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Button, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GunlukKazancPage = ({ soldBooks }) => {
@@ -84,12 +84,11 @@ const GunlukKazancPage = ({ soldBooks }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Günlük Kazanç Takibi</Text>
-      </View>
-      <Button title="Kayıtları Sil" onPress={clearRecords} color="red" />
+      <TouchableOpacity style={styles.clearButton} onPress={clearRecords}>
+        <Text style={styles.clearButtonText}>Kayıtları Sil</Text>
+      </TouchableOpacity>
       <View style={styles.table}>
-        <View style={styles.row}>
+        <View style={styles.tableHeader}>
           <Text style={[styles.cell, styles.headerCell]}>Tarih</Text>
           <Text style={[styles.cell, styles.headerCell]}>Satılan Kitap Sayısı</Text>
           <Text style={[styles.cell, styles.headerCell]}>Toplam Gelir (₺)</Text>
@@ -107,31 +106,59 @@ const GunlukKazancPage = ({ soldBooks }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#eee',
   },
   header: {
-    backgroundColor: '#6200ee',
     padding: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   headerTitle: {
-    color: 'white',
-    fontSize: 20,
+    color: 'black',
+    fontSize: 24,
     textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  clearButton: {
+    backgroundColor: 'red',
+    margin: 20,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  clearButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   table: {
-    padding: 20,
+    marginHorizontal: 20,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    borderBottomWidth: 2,
+    borderBottomColor: '#ccc',
+    paddingVertical: 10,
+    backgroundColor: '#e9ecef',
+    borderRadius: 10,
   },
   row: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     paddingVertical: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginVertical: 5,
   },
   cell: {
     flex: 1,
     textAlign: 'center',
+    paddingVertical: 5,
   },
   headerCell: {
     fontWeight: 'bold',
+    color: '#343a40',
   },
 });
 
